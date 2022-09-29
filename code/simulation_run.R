@@ -187,4 +187,6 @@ sim_res <- lapply(1:seed,
                              seed = x)
 )
 
-write_csv(here("data","cumulative_risk.csv"))
+sim_res <- do.call(rbind,sim_res)
+
+write_csv(sim_res, here("data","cumulative_risk.csv"))
