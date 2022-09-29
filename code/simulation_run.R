@@ -31,11 +31,11 @@ for (package in packages) {
 
 seed = as.numeric(args[1])
 N = as.numeric(args[2])
-lmbd <- c(.005, .005, .005, .00525)
-ro <- c(.75, .65, .85, .6)
-bta <- c(1.2,1.7,.7,.5)
-rte <- c(.05, .04, .06, .025)
-admnC <- 90
+lambda <- lmbd <- c(.005, .005, .005, .00525)
+rho <- ro <- c(.75, .65, .85, .6)
+beta <- bta <- c(1.2,1.7,.7,.5)
+rateC <- rte <- c(.05, .04, .06, .025)
+adminC <- admnC <- 90
 
 weibullSim <- function(N, lambda, rho, beta, rateC, adminC, seed){
   
@@ -95,8 +95,8 @@ weibullSim <- function(N, lambda, rho, beta, rateC, adminC, seed){
   cum_risk_AJ <- rbind(aj_dat1, aj_dat0)
   
   # multinomial GLM via VGAM
-  vglm_func <- function(data, index){
-    a <- data[index,] %>% 
+  vglm_func <- function(data){
+    a <- sim_dat %>% #data %>% 
       mutate(ID = 1:n(),
              stop_rounded = ceiling(time)) %>% 
       uncount(stop_rounded) %>% 
@@ -109,10 +109,10 @@ weibullSim <- function(N, lambda, rho, beta, rateC, adminC, seed){
       select(ID, time_var, outcome, time, exposure, event)
     
     # model time-to-events via multinomial
-    mod1 <- vglm(outcome ~ ns(time_var, knots=c(10,15,20,25,30,40)),  
+    mod1 <- vglm(outcome ~ ns(scale(time_var), df=6),  
                  data=subset(a, exposure==1), 
                  family=multinomial(refLevel = 1))
-    mod0 <- vglm(outcome ~ ns(time_var, knots=c(10,15,20,25,30,40)),  
+    mod0 <- vglm(outcome ~ ns(scale(time_var), df=6),  
                  data=subset(a, exposure==0), 
                  family=multinomial(refLevel = 1))
     
