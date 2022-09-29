@@ -176,12 +176,15 @@ weibullSim <- function(N, lambda, rho, beta, rateC, adminC, seed){
   
 }
 
-sim_res <- weibullSim(N = N, 
-                      lambda = lmbd, 
-                      rho = ro, 
-                      beta = bta, 
-                      rateC = rte, 
-                      adminC = admnC,
-                      seed = seed)
+sim_res <- lapply(1:seed, 
+                  function(x)
+                  weibullSim(N = N, 
+                             lambda = lmbd, 
+                             rho = ro, 
+                             beta = bta, 
+                             rateC = rte, 
+                             adminC = admnC,
+                             seed = x)
+)
 
 write_csv(here("data","cumulative_risk.csv"))
